@@ -1,19 +1,16 @@
 """Transcription endpoints"""
 
-from pathlib import Path
-
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import HTMLResponse
 
 from src.config import get_settings
-from src.models import VideoStatus
 from src.services.transcription_service import TranscriptionService
 
 router = APIRouter()
 settings = get_settings()
 
 # Global transcription service instance (loaded at startup)
-transcription_service: TranscriptionService = None
+transcription_service: TranscriptionService | None = None
 
 
 def set_transcription_service(service: TranscriptionService):
@@ -56,11 +53,7 @@ async def start_transcription(video_id: str, background_tasks: BackgroundTasks):
         return _render_search_form(video_id)
 
     # Start transcription in background
-    background_tasks.add_task(
-        _transcribe_task,
-        video_id,
-        video_path
-    )
+    background_tasks.add_task(_transcribe_task, video_id, video_path)
 
     # Return progress indicator with polling
     return f"""
@@ -152,11 +145,12 @@ async def _transcribe_task(video_id: str, video_path: str):
         video_id: Video ID
         video_path: Path to video file
     """
+    if transcription_service is None:
+        raise RuntimeError("Transcription service is not initialized")
+
     try:
         await transcription_service.transcribe_video(
-            video_id=video_id,
-            video_path=video_path,
-            language="ja"
+            video_id=video_id, video_path=video_path, language="ja"
         )
     except Exception as e:
         # Log error (in production, use proper logging)

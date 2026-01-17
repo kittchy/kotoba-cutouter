@@ -45,19 +45,22 @@ kotoba-cutouter（コトバ・カットアウター）は、faster-whisperによ
 Dockerを使うと、FFmpegや依存関係が自動的にセットアップされます。
 
 1. リポジトリをクローン:
+
 ```bash
 git clone <repository-url>
 cd kotoba-cutouter
 ```
 
-2. Docker Composeで起動:
+1. Docker Composeで起動:
+
 ```bash
 docker-compose up
 ```
 
-3. ブラウザで http://localhost:8000 にアクセス
+1. ブラウザで <http://localhost:8000> にアクセス
 
 **開発モード（ホットリロード対応）:**
+
 ```bash
 docker-compose --profile dev up app-dev
 ```
@@ -73,11 +76,13 @@ docker-compose --profile dev up app-dev
 #### FFmpegのインストール
 
 **macOS**:
+
 ```bash
 brew install ffmpeg
 ```
 
 **Ubuntu/Debian**:
+
 ```bash
 sudo apt update
 sudo apt install ffmpeg
@@ -89,27 +94,31 @@ sudo apt install ffmpeg
 #### インストール
 
 1. リポジトリをクローン:
+
 ```bash
 git clone <repository-url>
 cd kotoba-cutouter
 ```
 
-2. 依存関係をインストール:
+1. 依存関係をインストール:
+
 ```bash
 uv sync
 ```
 
-3. 必要なディレクトリを作成:
+1. 必要なディレクトリを作成:
+
 ```bash
 mkdir -p uploads transcripts temp static/css static/js
 ```
 
-4. 開発サーバーの起動:
+1. 開発サーバーの起動:
+
 ```bash
 uvicorn src.main:app --reload
 ```
 
-5. ブラウザで http://localhost:8000 にアクセス
+1. ブラウザで <http://localhost:8000> にアクセス
 
 ## 使い方
 
@@ -220,17 +229,6 @@ ruff format src/
 ```bash
 ruff check src/
 ```
-
-## ライセンス
-
-MIT License
-
-## 参考資料
-
-- [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [HTMX](https://htmx.org/)
-- [FFmpeg](https://ffmpeg.org/)
 
 ## TODO
 

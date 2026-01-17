@@ -6,9 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from src.config import ensure_directories, get_settings
-
 from src.routers import pages, transcription, video
 
 # Global instances
@@ -28,9 +26,9 @@ async def lifespan(app: FastAPI):
 
     # Load faster-whisper model at startup
     from src.services.transcription_service import TranscriptionService
+
     transcription_svc = TranscriptionService(
-        model_size=settings.WHISPER_MODEL_SIZE,
-        device=settings.WHISPER_DEVICE
+        model_size=settings.WHISPER_MODEL_SIZE, device=settings.WHISPER_DEVICE
     )
     transcription.set_transcription_service(transcription_svc)
     print(f"Loaded faster-whisper model: {settings.WHISPER_MODEL_SIZE}")
@@ -70,9 +68,3 @@ async def health_check():
         "message": "kotoba-cutouter is running",
         "version": "0.1.0",
     }
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
