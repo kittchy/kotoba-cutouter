@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}kotoba-cutouter - 動画切り抜きツール{% endblock %}
+
+{% block content %}
+<!-- Step 1: Upload Video -->
+<div class="card">
+    <h2>Step 1: 動画をアップロード</h2>
+    <form
+        hx-post="/upload"
+        hx-encoding="multipart/form-data"
+        hx-target="#upload-result"
+        hx-indicator="#upload-spinner">
+        <div class="form-group">
+            <label for="video">動画ファイルを選択してください（MP4, MOV, AVI, MKV, WebM）</label>
+            <input type="file" id="video" name="video" accept="video/*" required>
+        </div>
+        <button type="submit" class="primary">アップロード</button>
+        <span id="upload-spinner" class="htmx-indicator">
+            <span class="spinner"></span> アップロード中...
+        </span>
+    </form>
+    <div id="upload-result"></div>
+</div>
+
+<!-- Step 2: Transcription (hidden until video is uploaded) -->
+<div id="transcription-section" style="display: none;">
+    <div class="card">
+        <h2>Step 2: 文字起こし</h2>
+        <div id="transcribe-container"></div>
+    </div>
+</div>
+
+<!-- Step 3: Search (hidden until transcription is complete) -->
+<div id="search-section" style="display: none;">
+    <div class="card">
+        <h2>Step 3: 単語を検索</h2>
+        <div id="search-container"></div>
+    </div>
+</div>
+
+<!-- Step 4: Download (shown when clip is ready) -->
+<div id="download-section" style="display: none;">
+    <div class="card">
+        <h2>Step 4: ダウンロード</h2>
+        <div id="download-container"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Show sections dynamically based on progress
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.detail.target.id === 'upload-result') {
+            document.getElementById('transcription-section').style.display = 'block';
+        }
+        if (event.detail.target.id === 'transcribe-result') {
+            document.getElementById('search-section').style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}
