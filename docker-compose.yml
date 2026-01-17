@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code for development (hot reload)
+      - ./src:/app/src
+      - ./static:/app/static
+      # Mount data directories
+      - ./uploads:/app/uploads
+      - ./transcripts:/app/transcripts
+      - ./temp:/app/temp
+    environment:
+      # Application settings
+      - UPLOAD_DIR=/app/uploads
+      - TRANSCRIPT_DIR=/app/transcripts
+      - TEMP_DIR=/app/temp
+      # Whisper settings
+      - WHISPER_MODEL_SIZE=base
+      - WHISPER_DEVICE=cpu
+      # File size limit (500MB)
+      - MAX_FILE_SIZE=524288000
+      # Context padding for word search (seconds)
+      - CONTEXT_PADDING=2.0
+    # Restart policy
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Development mode with auto-reload
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./static:/app/static
+      - ./uploads:/app/uploads
+      - ./transcripts:/app/transcripts
+      - ./temp:/app/temp
+    environment:
+      - UPLOAD_DIR=/app/uploads
+      - TRANSCRIPT_DIR=/app/transcripts
+      - TEMP_DIR=/app/temp
+      - WHISPER_MODEL_SIZE=base
+      - WHISPER_DEVICE=cpu
+      - MAX_FILE_SIZE=524288000
+      - CONTEXT_PADDING=2.0
+    command: ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    profiles:
+      - dev
