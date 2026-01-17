@@ -1,0 +1,10 @@
+[project]
+name = "kotoba-cutouter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "faster-whisper>=1.2.1",
+    "gradio>=6.3.0",
+]
