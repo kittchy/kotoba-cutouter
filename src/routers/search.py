@@ -38,21 +38,39 @@ async def search_keyword(
             <p style="margin: 0;">まず文字起こし処理を実行してください。</p>
         </div>'''
 
-    # Search for keyword in word-level timestamps
+    # Search for keyword in segment text (not individual words)
+    # This allows matching phrases that span multiple words
     matches = []
     keyword_lower = keyword.lower().strip()
 
     for seg_idx, segment in enumerate(transcript.segments):
-        for word in segment.words:
-            # Case-insensitive matching
-            if keyword_lower in word.word.lower():
-                matches.append({
-                    "word": word.word,
-                    "start": word.start,
-                    "end": word.end,
-                    "context": segment.text,
-                    "segment_index": seg_idx,
-                })
+        # Check if keyword exists in segment text
+        if keyword_lower not in segment.text.lower():
+            continue
+
+        # Find consecutive words that match the keyword
+        words = segment.words
+
+        # Try all possible consecutive word combinations
+        for i in range(len(words)):
+            for j in range(i + 1, len(words) + 1):
+                consecutive_words = words[i:j]
+
+                # Combine words (removing spaces that might be in word.word)
+                combined_text = "".join([w.word.strip() for w in consecutive_words])
+
+                # Check if this combination matches the keyword exactly
+                if keyword_lower == combined_text.lower():
+                    # Found a match - use the exact time range of matched words
+                    matches.append({
+                        "word": combined_text,
+                        "start": consecutive_words[0].start,
+                        "end": consecutive_words[-1].end,
+                        "context": segment.text,
+                        "segment_index": seg_idx,
+                    })
+                    # Only take the shortest match for each position
+                    break
 
     # No matches found
     if not matches:
@@ -74,13 +92,13 @@ async def search_keyword(
     """
 
     for i, match in enumerate(matches):
-        # Calculate trim times with padding
-        start_time = max(0, match["start"] - CONTEXT_PADDING)
-        end_time = match["end"] + CONTEXT_PADDING
+        # Use exact word boundaries without padding
+        start_time = match["start"]
+        end_time = match["end"]
 
         # Format timestamps for display
-        start_display = _format_timestamp(match["start"])
-        end_display = _format_timestamp(match["end"])
+        start_display = _format_timestamp(start_time)
+        end_display = _format_timestamp(end_time)
 
         results_html += f"""
         <div class="search-result-item">
@@ -101,7 +119,7 @@ async def search_keyword(
                     </button>
                 </form>
                 <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #666;">
-                    切り抜き範囲: {_format_timestamp(start_time)} - {_format_timestamp(end_time)} (前後{CONTEXT_PADDING}秒のパディング付き)
+                    切り抜き範囲: {_format_timestamp(start_time)} - {_format_timestamp(end_time)} (キーワード部分のみ)
                 </p>
             </div>
         </div>

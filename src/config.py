@@ -19,7 +19,9 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 500 * 1024 * 1024  # 500MB
 
     # Whisper model settings
-    WHISPER_MODEL_SIZE: Literal["tiny", "base", "small", "medium", "large"] = "base"
+    WHISPER_MODEL_SIZE: Literal[
+        "tiny", "base", "small", "medium", "large", "large-v3"
+    ] = "base"
     WHISPER_DEVICE: Literal["cpu", "cuda"] = "cpu"
 
     # Allowed video file extensions
