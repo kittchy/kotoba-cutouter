@@ -181,7 +181,7 @@ class VideoService:
         video_path: str, start_time: float, end_time: float, output_path: str
     ) -> str:
         """
-        Trim video using ffmpeg
+        Trim video using ffmpeg with padding before and after
 
         Args:
             video_path: Input video path
@@ -196,14 +196,26 @@ class VideoService:
             HTTPException: If ffmpeg command fails
         """
         try:
+            # Apply padding to start and end times
+            padding = settings.TRIM_PADDING_SECONDS
+            padded_start = max(0, start_time - padding)
+
+            # Get video duration to ensure end time doesn't exceed video length
+            video_duration = VideoService.get_video_duration(video_path)
+            if video_duration is not None:
+                padded_end = min(video_duration, end_time + padding)
+            else:
+                # If duration cannot be determined, just add padding
+                padded_end = end_time + padding
+
             cmd = [
                 "ffmpeg",
                 "-i",
                 video_path,
                 "-ss",
-                str(start_time),
+                str(padded_start),
                 "-to",
-                str(end_time),
+                str(padded_end),
                 "-c",
                 "copy",  # Fast processing (no re-encoding)
                 "-y",  # Overwrite output file
