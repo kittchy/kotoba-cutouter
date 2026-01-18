@@ -178,6 +178,57 @@ button:disabled {
     margin-top: 1.5rem;
 }
 
+.search-results-list {
+    margin-top: 1rem;
+}
+
+.search-result-item {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.result-time {
+    font-weight: 600;
+    color: #3498db;
+    font-family: monospace;
+}
+
+.result-word {
+    background-color: #3498db;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.result-context {
+    margin: 0.5rem 0;
+    font-style: italic;
+    color: #555;
+}
+
+.result-context p {
+    margin: 0;
+}
+
+.result-actions {
+    margin-top: 0.75rem;
+}
+
+.result-actions form {
+    display: inline;
+}
+
 .result-item {
     background-color: #f8f9fa;
     border-left: 4px solid #3498db;
@@ -195,6 +246,15 @@ button:disabled {
     margin: 0.5rem 0;
     font-style: italic;
     color: #555;
+}
+
+/* Info message */
+.info {
+    background-color: #3498db;
+    color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
 }
 
 /* Progress bar */

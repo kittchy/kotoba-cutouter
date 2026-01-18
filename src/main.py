@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from src.config import ensure_directories, get_settings
-from src.routers import pages, transcription, video
+from src.routers import pages, search, transcription, video
 
 # Global instances
 settings = get_settings()
@@ -54,10 +54,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(pages.router)
 app.include_router(video.router)
 app.include_router(transcription.router)
-
-# TODO: Include other routers (in Phase 4+)
-# from src.routers import search
-# app.include_router(search.router)
+app.include_router(search.router)
 
 
 @app.get("/health")
