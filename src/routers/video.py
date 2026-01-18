@@ -61,15 +61,15 @@ async def upload_video(video: UploadFile = File(...)):
         """
 
     except HTTPException as e:
-        return f'''<div class="error htmx-added">
+        return f"""<div class="error htmx-added">
             <h3 style="margin: 0 0 0.5rem 0;">❌ エラーが発生しました</h3>
             <p style="margin: 0;">{e.detail}</p>
-        </div>'''
+        </div>"""
     except Exception as e:
-        return f'''<div class="error htmx-added">
+        return f"""<div class="error htmx-added">
             <h3 style="margin: 0 0 0.5rem 0;">❌ アップロードに失敗しました</h3>
             <p style="margin: 0;">{str(e)}</p>
-        </div>'''
+        </div>"""
 
 
 @router.post("/trim")

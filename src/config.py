@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: set[str] = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
 
     # Video trimming settings
-    TRIM_PADDING_SECONDS: float = 0.5  # Padding before/after trim points
+    TRIM_PADDING_SECONDS: float = 0.1  # Padding before/after trim points
 
     # Cleanup settings
     MAX_FILE_AGE_HOURS: int = 24

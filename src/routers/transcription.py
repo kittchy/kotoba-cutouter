@@ -33,10 +33,10 @@ async def start_transcription(video_id: str, background_tasks: BackgroundTasks):
     """
     # Check if transcription service is loaded
     if transcription_service is None:
-        return '''<div class="error htmx-added">
+        return """<div class="error htmx-added">
             <h3 style="margin: 0 0 0.5rem 0;">❌ サービスエラー</h3>
             <p style="margin: 0;">文字起こしサービスが初期化されていません</p>
-        </div>'''
+        </div>"""
 
     # Find video file
     video_path = None
@@ -47,10 +47,10 @@ async def start_transcription(video_id: str, background_tasks: BackgroundTasks):
             break
 
     if not video_path:
-        return '''<div class="error htmx-added">
+        return """<div class="error htmx-added">
             <h3 style="margin: 0 0 0.5rem 0;">❌ ファイルが見つかりません</h3>
             <p style="margin: 0;">動画ファイルが見つかりません。再度アップロードしてください。</p>
-        </div>'''
+        </div>"""
 
     # Check if transcript already exists
     existing_transcript = TranscriptionService.load_transcript(video_id)

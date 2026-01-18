@@ -7,9 +7,6 @@ from src.services.transcription_service import TranscriptionService
 
 router = APIRouter()
 
-# Context padding in seconds (before and after the matched word)
-CONTEXT_PADDING = 2.0
-
 
 @router.post("/search", response_class=HTMLResponse)
 async def search_keyword(
@@ -33,10 +30,10 @@ async def search_keyword(
     # Load transcript
     transcript = TranscriptionService.load_transcript(video_id)
     if not transcript:
-        return '''<div class="error htmx-added">
+        return """<div class="error htmx-added">
             <h3 style="margin: 0 0 0.5rem 0;">❌ 文字起こしデータが見つかりません</h3>
             <p style="margin: 0;">まず文字起こし処理を実行してください。</p>
-        </div>'''
+        </div>"""
 
     # Search for keyword in segment text (not individual words)
     # This allows matching phrases that span multiple words
@@ -62,13 +59,15 @@ async def search_keyword(
                 # Check if this combination matches the keyword exactly
                 if keyword_lower == combined_text.lower():
                     # Found a match - use the exact time range of matched words
-                    matches.append({
-                        "word": combined_text,
-                        "start": consecutive_words[0].start,
-                        "end": consecutive_words[-1].end,
-                        "context": segment.text,
-                        "segment_index": seg_idx,
-                    })
+                    matches.append(
+                        {
+                            "word": combined_text,
+                            "start": consecutive_words[0].start,
+                            "end": consecutive_words[-1].end,
+                            "context": segment.text,
+                            "segment_index": seg_idx,
+                        }
+                    )
                     # Only take the shortest match for each position
                     break
 
