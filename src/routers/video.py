@@ -33,18 +33,19 @@ async def upload_video(video: UploadFile = File(...)):
         # Format duration
         duration_str = f"{metadata.duration:.1f}秒" if metadata.duration else "不明"
 
-        # Return HTML fragment with video info
+        # Return HTML fragment with video info only
         return f"""
-        <div class="success">
-            <p>✅ アップロード完了！</p>
-            <p>ファイル名: {metadata.filename}</p>
-            <p>動画の長さ: {duration_str}</p>
+        <div class="success htmx-added">
+            <h3 style="margin: 0 0 0.5rem 0;">✅ アップロード完了！</h3>
+            <p style="margin: 0.25rem 0;"><strong>ファイル名:</strong> {metadata.filename}</p>
+            <p style="margin: 0.25rem 0;"><strong>動画の長さ:</strong> {duration_str}</p>
         </div>
-        <div id="transcribe-container">
+        <div id="transcribe-container" hx-swap-oob="innerHTML">
             <button
                 class="primary"
                 hx-post="/transcribe/{metadata.id}"
                 hx-target="#transcribe-result"
+                hx-swap="innerHTML swap:300ms"
                 hx-indicator="#transcribe-spinner">
                 文字起こしを開始
             </button>
@@ -53,12 +54,22 @@ async def upload_video(video: UploadFile = File(...)):
             </span>
             <div id="transcribe-result"></div>
         </div>
+        <script>
+            // Show transcription section
+            document.getElementById('transcription-section').style.display = 'block';
+        </script>
         """
 
     except HTTPException as e:
-        return f'<div class="error">{e.detail}</div>'
+        return f'''<div class="error htmx-added">
+            <h3 style="margin: 0 0 0.5rem 0;">❌ エラーが発生しました</h3>
+            <p style="margin: 0;">{e.detail}</p>
+        </div>'''
     except Exception as e:
-        return f'<div class="error">アップロードに失敗しました: {str(e)}</div>'
+        return f'''<div class="error htmx-added">
+            <h3 style="margin: 0 0 0.5rem 0;">❌ アップロードに失敗しました</h3>
+            <p style="margin: 0;">{str(e)}</p>
+        </div>'''
 
 
 @router.post("/trim")

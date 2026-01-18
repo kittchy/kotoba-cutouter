@@ -277,6 +277,102 @@ button:disabled {
     transition: width 0.3s;
 }
 
+/* HTMX transitions and animations */
+.htmx-swapping {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
+
+.htmx-settling {
+    opacity: 0;
+}
+
+.htmx-added {
+    animation: fadeInUp 400ms ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Fade in animation for cards */
+.card {
+    animation: fadeIn 300ms ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Pulse animation for loading states */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Toast notification styles */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 300px;
+    max-width: 500px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    padding: 1rem 1.5rem;
+    z-index: 1000;
+    animation: slideInRight 300ms ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toast.success {
+    border-left: 4px solid #27ae60;
+}
+
+.toast.error {
+    border-left: 4px solid #e74c3c;
+}
+
+.toast.info {
+    border-left: 4px solid #3498db;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     header h1 {
@@ -285,5 +381,32 @@ button:disabled {
 
     .card {
         padding: 1.5rem;
+    }
+
+    .toast {
+        min-width: 250px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 0 0.5rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    button, .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
     }
 }

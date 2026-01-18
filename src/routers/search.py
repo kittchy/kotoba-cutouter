@@ -33,7 +33,10 @@ async def search_keyword(
     # Load transcript
     transcript = TranscriptionService.load_transcript(video_id)
     if not transcript:
-        return '<div class="error">Transcript not found</div>'
+        return '''<div class="error htmx-added">
+            <h3 style="margin: 0 0 0.5rem 0;">❌ 文字起こしデータが見つかりません</h3>
+            <p style="margin: 0;">まず文字起こし処理を実行してください。</p>
+        </div>'''
 
     # Search for keyword in word-level timestamps
     matches = []
@@ -54,17 +57,20 @@ async def search_keyword(
     # No matches found
     if not matches:
         return f"""
-        <div class="info">
-            <p>"{keyword}" is not found in the transcript.</p>
+        <div id="search-results">
+            <div class="info htmx-added">
+                <p>"{keyword}" is not found in the transcript.</p>
+            </div>
         </div>
         """
 
     # Render search results with trim buttons
     results_html = f"""
-    <div class="success">
-        <p>Found {len(matches)} match(es) for "{keyword}"</p>
-    </div>
-    <div class="search-results-list">
+    <div id="search-results">
+        <div class="success htmx-added">
+            <p>Found {len(matches)} match(es) for "{keyword}"</p>
+        </div>
+        <div class="search-results-list">
     """
 
     for i, match in enumerate(matches):
@@ -91,14 +97,20 @@ async def search_keyword(
                     <input type="hidden" name="start_time" value="{start_time}">
                     <input type="hidden" name="end_time" value="{end_time}">
                     <button type="submit" class="primary">
-                        Download clip ({_format_timestamp(start_time)} - {_format_timestamp(end_time)})
+                        📥 この区間をダウンロード
                     </button>
                 </form>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #666;">
+                    切り抜き範囲: {_format_timestamp(start_time)} - {_format_timestamp(end_time)} (前後{CONTEXT_PADDING}秒のパディング付き)
+                </p>
             </div>
         </div>
         """
 
-    results_html += "</div>"
+    results_html += """
+        </div>
+    </div>
+    """
     return results_html
 
 

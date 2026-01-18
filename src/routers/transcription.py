@@ -33,7 +33,10 @@ async def start_transcription(video_id: str, background_tasks: BackgroundTasks):
     """
     # Check if transcription service is loaded
     if transcription_service is None:
-        return '<div class="error">文字起こしサービスが初期化されていません</div>'
+        return '''<div class="error htmx-added">
+            <h3 style="margin: 0 0 0.5rem 0;">❌ サービスエラー</h3>
+            <p style="margin: 0;">文字起こしサービスが初期化されていません</p>
+        </div>'''
 
     # Find video file
     video_path = None
@@ -44,7 +47,10 @@ async def start_transcription(video_id: str, background_tasks: BackgroundTasks):
             break
 
     if not video_path:
-        return '<div class="error">動画ファイルが見つかりません</div>'
+        return '''<div class="error htmx-added">
+            <h3 style="margin: 0 0 0.5rem 0;">❌ ファイルが見つかりません</h3>
+            <p style="margin: 0;">動画ファイルが見つかりません。再度アップロードしてください。</p>
+        </div>'''
 
     # Check if transcript already exists
     existing_transcript = TranscriptionService.load_transcript(video_id)
@@ -62,10 +68,21 @@ async def start_transcription(video_id: str, background_tasks: BackgroundTasks):
             hx-get="/transcribe/status/{video_id}"
             hx-trigger="every 2s"
             hx-target="this"
-            hx-swap="outerHTML">
-            <div class="success">
-                <p>⏳ 文字起こし処理中...</p>
-                <p>この処理には数分かかる場合があります。しばらくお待ちください。</p>
+            hx-swap="outerHTML swap:300ms">
+            <div class="info htmx-added">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="spinner" style="width: 30px; height: 30px;"></div>
+                    <div>
+                        <h3 style="margin: 0;">⏳ 文字起こし処理中...</h3>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">faster-whisper で音声を解析しています</p>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar pulse" style="width: 100%;">処理中...</div>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem;">
+                    💡 ヒント: この処理には数分かかる場合があります。動画の長さに応じて時間がかかります。
+                </p>
             </div>
         </div>
     </div>
@@ -96,10 +113,21 @@ async def check_transcription_status(video_id: str):
             hx-get="/transcribe/status/{}"
             hx-trigger="every 2s"
             hx-target="this"
-            hx-swap="outerHTML">
-            <div class="success">
-                <p>⏳ 文字起こし処理中...</p>
-                <p>この処理には数分かかる場合があります。しばらくお待ちください。</p>
+            hx-swap="outerHTML swap:300ms">
+            <div class="info htmx-added">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="spinner" style="width: 30px; height: 30px;"></div>
+                    <div>
+                        <h3 style="margin: 0;">⏳ 文字起こし処理中...</h3>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">faster-whisper で音声を解析しています</p>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar pulse" style="width: 100%;">処理中...</div>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem;">
+                    💡 ヒント: この処理には数分かかる場合があります。動画の長さに応じて時間がかかります。
+                </p>
             </div>
         </div>
         """.format(video_id)
@@ -108,14 +136,16 @@ async def check_transcription_status(video_id: str):
 def _render_search_form(video_id: str) -> str:
     """Render search form HTML"""
     return f"""
-    <div class="success">
-        <p>✅ 文字起こしが完了しました！</p>
+    <div class="success htmx-added">
+        <h3 style="margin: 0 0 0.5rem 0;">✅ 文字起こしが完了しました！</h3>
+        <p style="margin: 0;">単語レベルのタイムスタンプ付きで文字起こしが完了しました。検索を開始できます。</p>
     </div>
-    <div id="search-container">
+    <div id="search-container" hx-swap-oob="innerHTML">
         <form
             hx-post="/search"
             hx-trigger="keyup changed delay:500ms from:#keyword"
             hx-target="#search-results"
+            hx-swap="innerHTML swap:300ms"
             hx-include="[name='video_id']">
             <input type="hidden" name="video_id" value="{video_id}">
             <div class="form-group">
@@ -131,10 +161,12 @@ def _render_search_form(video_id: str) -> str:
         <div id="search-results"></div>
     </div>
     <script>
-        // Show search section
-        document.getElementById('search-section').style.display = 'block';
+        // Show search section with animation
+        const searchSection = document.getElementById('search-section');
+        searchSection.style.display = 'block';
+        searchSection.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
     </script>
-    """
+    """.replace("{{", "{").replace("}}", "}")
 
 
 async def _transcribe_task(video_id: str, video_path: str):
